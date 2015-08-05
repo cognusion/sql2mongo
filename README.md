@@ -22,7 +22,7 @@ cd sql2mongo
 go build
 ```
 
-If you're not going to a particular SQL server type, you may omit the driver from the _go get_ list above, **and** delete its _whatever.go_ file from the sql2mongo folder before running ```go build```
+If you're not going to use a particular SQL server type, you may omit the driver from the _go get_ list above, **and** delete its _whatever.go_ file from the sql2mongo folder before running ```go build```
 
 ### Usage
 
@@ -94,11 +94,24 @@ Jobs have metadata:
 * Username - User to connect as
 * Password - Password to authenticate with
 * Database - Database to connect to
-* Table - Table (or Collection) to read from (or write to)
+* Table - Table (or Collection) in the above Database to read from (or write to)
+
+## Tomorrow, Tomorrow ...
+
+What may happen, in no particular order:
+* More SQL sources
+* Source column spec
+* Source WHERE clause spec
+* Source joins
+
+What won't happen, in no particular order:
+* Any non-SQL sources
+* Any non-MongoDB destinations
+
 
 ## Adding new SQL sources
 
-Any database/sql -compatible DB can be added trivially, even if you aren't particularly handy with Go. I would recommend cloning mysql.go and salting that as needed. Copied below with extra comments to draw out the 5 changes needed:
+Any _database/sql_ -compatible DB can be added trivially, even if you aren't particularly handy with Go. I would recommend cloning mysql.go and salting that as needed. Copied below with extra comments to draw out the 5 changes needed:
 
 ```go
 package main
@@ -116,6 +129,7 @@ func init() {
 
 func (c *Credential) ToMySQL() string {	// 3. rename and salt this function to return 
 										// a valid "Open" string from a Credential
+	
 	//username:password@protocol(address)/dbname
 	return c.Username + ":" + c.Password + "@tcp(" + c.Host + ")/" + c.Database
 }
