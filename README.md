@@ -7,6 +7,8 @@ I'm under no delusion that others have [re]invented this wheel previously. I had
 
 ### Build
 
+There are zipped binaries for OSX (64bit) and Linux (i386 and x86_64) in the _binaries/_ folder
+
 Assuming you have Go and Git:
 ```bash
 git clone https://github.com/cognusion/sql2mongo.git
