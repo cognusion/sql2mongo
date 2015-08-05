@@ -3,6 +3,26 @@ A simple engine to take a SQL (MySQL or PostgreSQL, currently, but trivial to ad
 
 I'm under no delusion that others have [re]invented this wheel previously. I had specific needs and didn't find anything that did what I wanted without lots of overhead I didn't want.
 
+## Basics
+
+### Build
+
+Assuming you have Go and Git:
+```bash
+git clone https://github.com/cognusion/sql2mongo.git
+
+go get github.com/jmoiron/sqlx
+go get gopkg.in/mgo.v2
+go get github.com/lib/pq  # PostgreSQL driver
+go get github.com/go-sql-driver/mysql  # MySQL driver
+
+cd sql2mongo
+go build
+```
+
+If you're not going to a particular SQL server type, you may omit the driver from the _go get_ list above, **and** delete its _whatever.go_ file from the sql2mongo folder before running ```go build```
+
+### Usage
 
 ```bash
 ./sql2mongo --help
