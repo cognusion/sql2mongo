@@ -21,10 +21,10 @@ var debugOut *log.Logger = log.New(ioutil.Discard, "", log.Lshortfile)
 
 // If you add a new SQL input, make sure to add to this list: sqlList[name] = yourSqlInitFunction
 // see mysql.go or pgsql.go
-var sqlList map[string]func(*Credential)(*sqlx.DB, *sqlx.Rows)
+var sqlList map[string]func(*Credential, string) (*sqlx.DB, *sqlx.Rows)
 
 func init() {
-	sqlList = make(map[string]func(*Credential)(*sqlx.DB, *sqlx.Rows))
+	sqlList = make(map[string]func(*Credential, string) (*sqlx.DB, *sqlx.Rows))
 }
 
 type Config struct {
@@ -48,6 +48,7 @@ type Job struct {
 	Enabled        bool
 	WriteOperation string
 	SqlType        string
+	SqlColumns     string
 	Mongo          Credential
 	SQL            Credential
 }
@@ -86,7 +87,7 @@ func main() {
 		debugOut = log.New(os.Stdout, "[DEBUG]", log.Lshortfile)
 	}
 
-	// Because of my silly logic, the config params are logically 
+	// Because of my silly logic, the config params are logically
 	// inverse from the function parameters. Dealing with that here.
 	var (
 		convertBytes bool = true
@@ -145,7 +146,7 @@ func main() {
 			if k == job.SqlType {
 				found = true
 				debugOut.Printf("Found SQL type %s\n", k)
-				sqld, sqlc = f(&job.SQL)
+				sqld, sqlc = f(&job.SQL, job.SqlColumns)
 				break
 			}
 		}
@@ -183,7 +184,7 @@ func main() {
 
 // joinKeys is a simple function to spit out a comma-separated list of keys from
 // specifically the sqlList map
-func joinKeys(m map[string]func(*Credential)(*sqlx.DB, *sqlx.Rows)) string {
+func joinKeys(m map[string]func(*Credential,string) (*sqlx.DB, *sqlx.Rows)) string {
 	var keys []string
 	for k, _ := range m {
 		keys = append(keys, k)

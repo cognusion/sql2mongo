@@ -15,13 +15,17 @@ func (c *Credential) ToPgSQL() string {
 	return "postgres://" + c.Username + ":" + c.Password + "@" + c.Host + "/" + c.Database
 }
 
-func pgsqlOpen(c *Credential) (*sqlx.DB, *sqlx.Rows) {
+func pgsqlOpen(c *Credential, columns string) (*sqlx.DB, *sqlx.Rows) {
 	db, err := sqlx.Open("postgres", c.ToPgSQL())
 	if err != nil {
 		log.Fatal(err)
 	}
+	
+	if columns == "" {
+		columns = "*"
+	}
 
-	rows, err := db.Queryx("SELECT * FROM " + c.Table)
+	rows, err := db.Queryx("SELECT " + columns + " FROM " + c.Table)
 	if err != nil {
 		log.Fatal(err)
 	}

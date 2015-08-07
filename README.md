@@ -51,6 +51,7 @@ A config file defining jobs is necessary to accomplish work. Below is a simple o
 			"writeoperation": "upsert",
 			"enabled": true,
 			"sqltype": "mysql",
+			"sqlcolumns": "id, afield, `key`, bfield",
 			"sql": {
 				"host": "mysqlserver:3306",
 				"username": "myuser",
@@ -83,6 +84,7 @@ Jobs have metadata:
 * SqlType - Which SQL type to use:
   * mysql - MySQL
   * pgsql - PostgreSQL
+* SqlColumns - A list of columns, properly delimited and escaped, to be SELECTed
 * Mongo - A Credential definition for the target MongoDB server
 * SQL - A Credential defintion for the source SQL server
 
@@ -100,7 +102,6 @@ Jobs have metadata:
 
 What may happen, in no particular order:
 * More SQL sources
-* Source column spec
 * Source WHERE clause spec
 * Source joins
 
@@ -134,14 +135,18 @@ func (c *Credential) ToMySQL() string {	// 3. rename and salt this function to r
 	return c.Username + ":" + c.Password + "@tcp(" + c.Host + ")/" + c.Database
 }
 
-func mysqlOpen(c *Credential) (*sqlx.DB, *sqlx.Rows) { // 4. rename
+func mysqlOpen(c *Credential, columns string) (*sqlx.DB, *sqlx.Rows) { // 4. rename
 	db, err := sqlx.Open("mysql", c.ToMySQL())	// 5. rename the driver, 
 												//and the c.To*() to #3 above
 	if err != nil {
 		log.Fatal(err)
 	}
+	
+	if columns == "" {
+		columns = "*"
+	}
 
-	rows, err := db.Queryx("SELECT * FROM " + c.Table)
+	rows, err := db.Queryx("SELECT " + columns + " FROM " + c.Table)
 	if err != nil {
 		log.Fatal(err)
 	}
