@@ -135,7 +135,8 @@ func main() {
 
 		// Mongo handle, right to the collection
 		mongod, mongoc := mongoOpen(&job.Mongo)
-
+		defer mongod.Close()
+		
 		// SQL can vary
 		var sqlc *sqlx.Rows
 		var sqld *sqlx.DB
@@ -153,6 +154,7 @@ func main() {
 		if found == false {
 			log.Fatalf("SQL type of %s is not currently valid. Pick one of: "+joinKeys(sqlList)+"\n", job.SqlType)
 		}
+		defer sqld.Close()
 
 		writeCount := 0
 		errorCount := 0
@@ -172,10 +174,6 @@ func main() {
 				errorCount++
 			}
 		}
-
-		// Clean up, explicitly
-		mongod.Close()
-		sqld.Close()
 
 		totalCount := writeCount + errorCount
 		log.Printf("Load completed with %d/%d rows written", writeCount, totalCount)
