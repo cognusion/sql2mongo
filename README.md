@@ -11,12 +11,8 @@ Assuming you have Go and Git:
 ```bash
 git clone https://github.com/cognusion/sql2mongo.git
 
-go get github.com/jmoiron/sqlx
-go get gopkg.in/mgo.v2
-go get github.com/lib/pq  # PostgreSQL driver
-go get github.com/go-sql-driver/mysql  # MySQL driver
-
 cd sql2mongo
+go get ./...
 go build
 ```
 
